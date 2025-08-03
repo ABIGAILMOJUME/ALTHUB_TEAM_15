@@ -6,6 +6,13 @@ This repository is a **collaborative workspace** for the Althub 15 team. It enfo
 
 ## Repository Usage Overview
 
+| Branch Name     | Purpose                          |
+|-----------------|----------------------------------|
+| `main`          | Production-ready frontend code   |
+| `dev-frontend`  | Development branch for frontend  |
+| `main-backend`  | Production-ready backend code    |
+| `dev-backend`   | Development branch for backend   |
+
 ###  What This Repo Enforces:
 - Pull Request (PR) **must be created** for any code changes.
 - **Peer review is mandatory** before merging.
