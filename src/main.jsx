@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import SignUp from './Components/SignUp'; 
+import SignUp from './Components/RegistrationPage'; 
 import './index.css'
 import App from './App.jsx'
 
