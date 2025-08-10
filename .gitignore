@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+ 
+# Python Cache 
+__pycache__/ 
+*.pyc 
+ECHO is on.
+# IDE 
+.idea/ 
+*.iml 
