@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+"backend/__pycache__/" 
+"backend/.env" 
+"backend/venv/" 
+"backend/services/assignment.py" 
+backend/services/assignment.py 
