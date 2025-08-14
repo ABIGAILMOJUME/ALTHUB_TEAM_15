@@ -1,9 +1,8 @@
-form input{
-  padding: 8px;
-  margin: 4px;
+.signup-container, input{
+  padding: 8px 0;
+  margin: 3px 0;
   
 }
-
 form > button {
 margin-top: 9px;
 }
@@ -12,26 +11,18 @@ margin-top: 9px;
 
 }
 
-/* Responsive: hide image on small screens */
-/*
-@media (max-width: 768px) {
-  .signup-image {
-    display: none;
-  }
-
-  label {
-        display: flex;
-  gap: 1rem;
+.app-container {
+  display: flex;
   flex-direction: column;
-
-    }
-
-  .signup-container {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-   width: 100vh;
-  }
+  min-height: 100vh; /* make it stretch to full screen height */
 }
+
+.main-content {
+  flex: 1; /* push footer to the bottom */
 }
-*/
+
+footer {
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
