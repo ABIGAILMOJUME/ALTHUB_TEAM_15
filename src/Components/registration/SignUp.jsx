@@ -1,140 +1,200 @@
-// src/App.jsx
-import React from "react";
+import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useForm, Form } from "react-hook-form";
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
-import "/binit-logo.svg";
-import { Link } from 'react-router-dom'
+import { Link, useNavigate  } from "react-router-dom";
+import { Form } from "react-router-dom";
 
 export default function SignUp() {
-  
-  const {
-    register,
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [showPassword] = useState(false);
+  const [showConfirmPassword] = useState(false);
+
+  // Handle input change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Validate form fields
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Valid email is required";
+    if (formData.password.length < 6)
+      newErrors.password = "Password must be at least 8 characters";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+    return newErrors;
+  };
+
+  // Handle form submission
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setErrors({});
+    setSuccess("");
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Replace with backend team’s endpoint
+      const res = await fetch("https://jsonplaceholder.typicode.com/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess("Account created successfully!");
+        setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+      } else {
+        setErrors({ api: data.message || "Registration failed" });
+      }
+    } catch (error) {
+      setErrors({ api: "Network error" });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
-    <div className="flex fixed h-screen min-h-screen w-full signup-container">
+    <div className="flex fixed left-0 min-h-screen h-1/2 w-full">
       {/* Left Section */}
-      <div className="w-1/2 items-center justify-center ">
-        {/*<div>
-          <img src="/binit-logo.svg" alt="BinIt Logo" className="" />
-          <h1 className="">Sign Up</h1>
-          <p className=" max-w-1/2">
+      <div className="w-1/2 items-center justify-center h-full flex flex-col signup-container">
+        <img
+          src="/binit-logo.svg"
+          alt="BinIt"
+          className="relative right-1/7 bottom-1/25"
+        />
+        <form onSubmit={handleFormSubmit} className=" max-w-1/2">
+          <h1 className="text-2xl font-bold">Sign Up</h1>
+          <p className="max-w-full">
             Create an account to report waste, request pickups, join cleanups,
             and earn rewards.
           </p>
-        </div>*/}
-        <div className="flex flex-col items-center justify-center h-full space-y-4">
-          <Form
-           /*action="https://jsonplaceholder.typicode.com/posts"
-            onSuccess={() => {
-              alert("Your application is updated.");
-            }}
-            onError={() => {
-              alert("Submission has failed.");
-            }}
-              */
-            control={control}
-            method="POST"
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-1/2 space-y-4 "
-          >
-            <div className="p-2 flex flex-col">
-              <label htmlFor="name">
-                {" "}
-                Name <FaUser className="text-gray-500 mr-2" />{" "}
-              </label>
-              <Input
-                type="text"
-                placeholder="Enter your name"
-                {...register("username", {
-                  required: "First name is required",
-                })}
-                className=" outline-none"
-              />
-            </div>
-            {errors.username && (
-              <p className="text-red-500">{errors.username.message}</p>
-            )}
+          {success && <p className="text-green-500">{success}</p>}
+          {errors.api && <p className="text-red-500">{errors.api}</p>}
 
-            <div className="flex p-2 flex-col">
-              <label htmlFor="email" className="">
-                {" "}
-                Email <FaEnvelope className="text-gray-500 mr-2 " />
-              </label>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                {...register("email", { required: "Email is required" })}
-                className="flex-1 outline-none"
-              />
-            </div>
-            {errors.email && (
-              <p className="text-red-500">{errors.email.message}</p>
-            )}
-
-            <div className="flex p-2 flex-col">
-              <label
-                htmlFor="password"
-                className="block mb-1 text-sm font-medium"
-              >
-                {" "}
-                Password <FaLock className="text-gray-500 mr-2" />
-              </label>
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                {...register("password", { required: "Password is required" })}
-                className="flex-1 outline-none"
-              />
-        </div>
-        <div className="flex p-2 flex-col">
-              <label
-                htmlFor="password"
-                className="block mb-1 text-sm font-medium"
-              >
-                {" "}
-                Password <FaLock className="text-gray-500 mr-2" />
-              </label>
-              <Input
-                type="password"
-                placeholder="Comfirm password"
-                {...register("password", { required: "Password is required" })}
-                className="flex-1 outline-none"
-              />
-</div>
-
-            {errors.password && (
-              <p className="text-red-500">{errors.password.message}</p>
-            )}
-
-
-            <Button className="button border-0  w-full h-1/6">
-              Sign Up
-            </Button>
-            <Button className=" bg-(--background) text-(--primary) w-full h-1/6 rounded-lg shadow-md">
-              <FcGoogle />Sign up with Google
-            </Button>
-            <div className="items-center justify-center mt-4"> Already have an account <Link to ="/login">Login</Link>
+          {/* Name */}
+          <div className="mb-auto">
+            <label htmlFor="name" className="rounded-md text-sm m-5">
+              Name*
+            </label>
+            <Input
+              type="text"
+              name="name"
+              value={formData.name}
+              placeholder="Enter your name"
+              onChange={handleChange}
+              className="w-full h-1/6 rounded-md"
+            />
           </div>
-          </Form>
-          
-        </div>
+          {errors.name && <p className="text-red-500">{errors.name}</p>}
+
+          {/* Email */}
+          <div className="mb-auto">
+            <label htmlFor="email" className="">
+              Email*
+            </label>
+            <Input
+              type="email"
+              name="email"
+              value={formData.email}
+              placeholder="Enter your email"
+              onChange={handleChange}
+              className="w-full h-1/6 rounded-md"
+            />
+          </div>
+          {errors.email && <p className="text-red-500">{errors.email}</p>}
+
+          {/* Password */}
+          <div className="relative">
+            <label
+              htmlFor="password"
+              className="block mb-1 text-sm font-medium"
+            >
+              Password*
+            </label>
+            <Input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              placeholder="Create a password"
+              onChange={handleChange}
+              className="flex-1 outline-none"
+            />
+          </div>
+          {errors.password && <p className="text-red-500">{errors.password}</p>}
+          {/* Confirm Password */}
+          <div className="relative">
+            <label
+              htmlFor="password"
+              className="block mb-1 text-sm font-medium"
+            >
+              Confirm Password*
+            </label>
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              placeholder="Comfirm password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="rounded-md"
+            />
+          </div>
+
+          {errors.confirmPassword && (
+            <p className="text-red-500">{errors.confirmPassword}</p>
+          )}
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="button border-0  w-full h-1/10 items-center rounded-md"
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Get Started"}
+          </Button>
+
+          {/* Google Signup */}
+          <Button
+            type="button"
+            variant="outline"
+            className=" bg-(--background) text-(--primary) w-full h-1/10 rounded-md"
+          >
+            <FcGoogle /> Sign up with Google
+          </Button>
+
+          {/* Login Link */}
+          <p className="text-center text-sm">
+            Already have an account? {" "}<Link to="/login" className="text-chart-2">
+             Login
+             </Link>
+          </p>
+        </form>
       </div>
 
-      {/* Right */}
+      {/* Right image section*/}
       <div
         className="w-1/2 max-h-full bg-cover bg-center signup-image"
         style={{
           backgroundImage: "url('/binit-image.jpg')",
         }}
       />
+
     </div>
   );
 }
