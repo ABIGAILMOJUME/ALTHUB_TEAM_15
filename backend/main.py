@@ -14,7 +14,9 @@ models.Base.metadata.create_all(bind=engine)
 os.makedirs("uploads", exist_ok=True)
 
 
+
 app = FastAPI()
+
 
 app.include_router(admin.admin_router)
 app.include_router(login_router)

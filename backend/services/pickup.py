@@ -1,7 +1,6 @@
 import uuid
 from fastapi import HTTPException,status
 from sqlalchemy.orm import Session
-
 import logger
 import models
 from schemas.pickup import PickupRequestCreate

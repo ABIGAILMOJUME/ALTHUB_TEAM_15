@@ -1,7 +1,6 @@
 import logging
 import logging.handlers
 
-# logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 
 PAPERTRAIL_HOST = 'logs2.papertrailapp.com'
 PAPERTRAIL_PORT = 50951

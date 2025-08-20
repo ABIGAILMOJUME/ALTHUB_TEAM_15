@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-
 from core.oauth import get_admin_user
 from models import PickupRequest
 from database import get_db
@@ -10,7 +9,7 @@ from models import User
 
 admin_router = APIRouter(prefix="/admin", tags=["Admin"])
 
-@admin_router.get("/pickups", response_model=List[PickupRequestOut])
+@admin_router.get("/pickups", status_code=status.HTTP_200_OK, response_model=List[PickupRequestOut])
 def get_all_pickups(db: Session = Depends(get_db)):
     return db.query(PickupRequest).all()
 

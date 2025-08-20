@@ -19,3 +19,11 @@ class TokenData(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+class ResetPassword(BaseModel):
+    token: str
+    new_password: str

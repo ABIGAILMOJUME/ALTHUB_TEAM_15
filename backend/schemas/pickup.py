@@ -7,6 +7,7 @@ class PickupRequestBase(BaseModel):
     location: str
     waste_type: str
     scheduled_date: datetime
+    image_path: str
 
 class PickupRequestCreate(PickupRequestBase):
     pass
