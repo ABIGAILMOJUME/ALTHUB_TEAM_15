@@ -1,0 +1,35 @@
+/* src/components/Header.css */
+.mobile-header {
+  display: none; /* Hide on desktop by default */
+  padding: 15px 20px;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.mobile-logo {
+  font-size: 24px;
+  color: #2E7D32;
+  margin: 0;
+}
+
+.menu-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #333333;
+}
+
+/* This media query makes the header visible ONLY on mobile */
+@media (max-width: 768px) {
+  .mobile-header {
+    display: flex; /* Show it on mobile */
+  }
+}
+
+.mobile-logo-img {
+  height: 35px; /* Adjust height as needed */
+}

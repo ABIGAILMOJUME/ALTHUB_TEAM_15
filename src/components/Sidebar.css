@@ -1,0 +1,116 @@
+/* src/components/Sidebar.css */
+.sidebar {
+  width: 280px;
+  background-color: #FFFFFF;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  border-right: 1px solid #E0E0E0;
+}
+
+.sidebar-header {
+  margin-bottom: 30px;
+}
+
+.logo {
+  font-size: 28px;
+  color: #2E7D32;
+  margin: 0;
+}
+
+.search-bar {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666666;
+}
+
+.menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.menu-item {
+  display: flex; /* ADDED: This is the key fix for alignment */
+  align-items: center; /* ADDED: This vertically centers the icon and text */
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #666666;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-item svg {
+  margin-right: 15px;
+  font-size: 20px;
+}
+
+.menu-item.active, .menu-item:hover {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.user-profile {
+  display: flex; /* ADDED: This aligns the user profile section */
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #E0E0E0;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.user-details {
+  flex-grow: 1;
+}
+
+.user-details p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333333;
+}
+
+.user-email {
+  font-size: 12px;
+  color: #666666;
+}
+
+.logout-icon {
+  font-size: 20px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.logo-img {
+  height: 40px; /* Adjust height as needed */
+}
