@@ -1,19 +1,32 @@
-from dotenv import load_dotenv
-import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import EmailStr
 
-load_dotenv()
 
-class Settings:
-    APP_NAME: str = os.getenv("APP_NAME", "FastAPI App")
-    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+class Settings(BaseSettings):
+    # App
+    APP_NAME: str = "Waste Management API"
+    APP_BASE_URL: str = "http://localhost:8000"
+    DEBUG: bool = True
 
     # Database
-    SQLALCHEMY_DATABASE_URL: str = os.getenv("SQLALCHEMY_DATABASE_URL")
+    SQLALCHEMY_DATABASE_URL: str
 
-    # JWT Settings
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
-    RESET_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("RESET_TOKEN_EXPIRE_MINUTES", 10))
+    # JWT
+    SECRET_KEY: str  # your main JWT secret
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    RESET_TOKEN_EXPIRE_MINUTES: int = 15
+
+    # Mail
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: EmailStr
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+
+model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 settings = Settings()
