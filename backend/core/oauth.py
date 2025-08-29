@@ -6,11 +6,14 @@ from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-
 from core.config import settings
 from database import get_db
 from models import User
 from schemas.login import TokenData
+from core.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -80,5 +83,41 @@ def decode_token(token: str):
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
         return None
-    
+
+def create_reset_token(email: str) -> str:
+
+    try:
+        payload = {
+            "sub": email,
+            "exp": datetime.now() + timedelta(minutes=settings.RESET_TOKEN_EXPIRE_MINUTES),
+            "type": "reset"
+        }
+        token = jwt.encode(
+            payload,
+            settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM
+        )
+        return token
+
+    except Exception as e:
+        logger.error(f"Error creating reset token: {e}")
+        raise
+
+
+def verify_reset_token(token: str) -> str:
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
+        )
+        if payload.get("type") != "reset":
+            raise ValueError("Invalid token type")
+
+        return payload.get("sub")
+
+    except jwt.ExpiredSignatureError:
+        raise ValueError("Token has expired")
+    except jwt.JWTError:
+        raise ValueError("Invalid token")
 

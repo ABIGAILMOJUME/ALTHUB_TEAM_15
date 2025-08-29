@@ -1,6 +1,5 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-import models
 from services.user import get_user_by_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,3 +16,6 @@ def authenticate_user(db: Session, email: str, password: str):
     if not user or not verify_password(password, user.hashed_password):
         return False
     return user
+
+
+

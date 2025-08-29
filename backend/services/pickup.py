@@ -1,9 +1,17 @@
-import uuid
-from fastapi import HTTPException,status
+import shutil
+import uuid, os
+from fastapi import HTTPException,status, UploadFile,File
 from sqlalchemy.orm import Session
 import logger
 import models
 from schemas.pickup import PickupRequestCreate
+
+UPLOAD_DIR = "upload"
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
+
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 logger = logger.get_logger(__name__)
 
@@ -57,3 +65,64 @@ def delete_pickup_by_id(db: Session, id: str):
     db.delete(pickup)
     db.commit()
     return {"message": f"Pickup request with ID {id} deleted successfully"}
+
+def save_pickup_image(
+        db: Session,
+        pickup_id: uuid.UUID,
+        file: UploadFile = File(...)
+):
+
+    # Find existing pickup
+    pickup = db.query(models.PickupRequest).filter(models.PickupRequest.id == pickup_id).first()
+    if not pickup:
+        raise HTTPException(status_code=404, detail="Pickup not found")
+
+    # Validate file type
+    file_ext = file.filename.split(".")[-1].lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid file type. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
+    # Validate file size
+    file.file.seek(0, os.SEEK_END)
+    file_size = file.file.tell()
+    file.file.seek(0)
+
+    if file_size > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE // 1024 // 1024}MB"
+        )
+
+    # Generate unique filename
+    filename = f"{uuid.uuid4()}.{file_ext}"
+    file_path = os.path.join(UPLOAD_DIR, filename)
+
+    try:
+        # Save file to local folder
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Update pickup record with new image path
+        pickup.image_path = file_path
+        db.commit()
+        db.refresh(pickup)
+
+        return {
+            "pickup_id": pickup.id,
+            "filename": filename,
+            "file_path": file_path,
+            "url": f"/{UPLOAD_DIR}/{filename}",
+            "message": "Image uploaded successfully"
+        }
+
+    except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to upload image: {str(e)}"
+        )
+
