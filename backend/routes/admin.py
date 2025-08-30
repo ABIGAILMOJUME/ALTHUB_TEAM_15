@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from core.oauth import get_admin_user
 from models import PickupRequest
 from database import get_db
 from schemas.pickup import PickupRequestOut
-from models import User
 
 admin_router = APIRouter(prefix="/admin", tags=["Admin"])
 

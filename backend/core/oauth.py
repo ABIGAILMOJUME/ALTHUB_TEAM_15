@@ -1,15 +1,21 @@
+import os
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status
-from fastapi import status
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from sqlalchemy import except_
 from sqlalchemy.orm import Session
+from core.config import settings
 from database import get_db
 from models import User
 from schemas.login import TokenData
 from core.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -21,9 +27,9 @@ RESET_TOKEN_EXPIRE_MINUTES = settings.RESET_TOKEN_EXPIRE_MINUTES
 
 def create_token(data: dict, expires_delta=None):
     to_encode = data.copy()
-    expire = datetime.now() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
-    encoded = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded
 
 def get_admin_user(
@@ -40,7 +46,7 @@ def get_admin_user(
 
 def verify_access_token(token: str, credentials_exception):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email: str = payload.get("sub")
         is_admin: bool = payload.get("is_admin", False)
 
@@ -74,6 +80,44 @@ def get_current_user(
 
 def decode_token(token: str):
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
         return None
+
+def create_reset_token(email: str) -> str:
+
+    try:
+        payload = {
+            "sub": email,
+            "exp": datetime.now() + timedelta(minutes=settings.RESET_TOKEN_EXPIRE_MINUTES),
+            "type": "reset"
+        }
+        token = jwt.encode(
+            payload,
+            settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM
+        )
+        return token
+
+    except Exception as e:
+        logger.error(f"Error creating reset token: {e}")
+        raise
+
+
+def verify_reset_token(token: str) -> str:
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
+        )
+        if payload.get("type") != "reset":
+            raise ValueError("Invalid token type")
+
+        return payload.get("sub")
+
+    except jwt.ExpiredSignatureError:
+        raise ValueError("Token has expired")
+    except jwt.JWTError:
+        raise ValueError("Invalid token")
+

@@ -1,19 +1,37 @@
+from pydantic_settings import BaseSettings
+from pydantic import EmailStr, Field
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
-class Settings:
-    APP_NAME: str = os.getenv("APP_NAME", "FastAPI App")
-    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+
+class Settings(BaseSettings):
+    # App
+    APP_NAME: str = "Waste Management API"
+    APP_BASE_URL: str = "http://localhost:8000"
+    DEBUG: bool = True
 
     # Database
-    SQLALCHEMY_DATABASE_URL: str = os.getenv("SQLALCHEMY_DATABASE_URL")
+    SQLALCHEMY_DATABASE_URL: str = Field(..., env="SQLALCHEMY_DATABASE_URL")
 
-    # JWT Settings
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
-    RESET_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("RESET_TOKEN_EXPIRE_MINUTES", 10))
+    # JWT
+    SECRET_KEY: str = Field(..., env="SECRET_KEY")
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    RESET_TOKEN_EXPIRE_MINUTES: int = 15
+
+    # Mail
+    MAIL_USERNAME: str = Field(..., env="MAIL_USERNAME")
+    MAIL_PASSWORD: str = Field(..., env="MAIL_PASSWORD")
+    MAIL_FROM: EmailStr = Field(..., env="MAIL_FROM")
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str = Field(..., env="MAIL_SERVER")
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+
+    class Config:
+        env_file = ".env"
+        extra = "ignore"
+
 
 settings = Settings()
