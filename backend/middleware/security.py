@@ -19,6 +19,6 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Log the request processing time
         process_time = time.time() - start_time
-        response.headers["X-Process-Time"] = str(process_time, 3)
+        response.headers["X-Process-Time"] = str(process_time)
 
         return response
