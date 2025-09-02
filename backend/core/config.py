@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from pydantic import EmailStr, Field
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
@@ -19,6 +20,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     RESET_TOKEN_EXPIRE_MINUTES: int = 15
+    
+    ALLOWED_ORIGINS: list = ["http://localhost:3000", "http://localhost:8000"]
 
     # Mail
     MAIL_USERNAME: str = Field(..., env="MAIL_USERNAME")

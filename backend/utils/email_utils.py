@@ -1,4 +1,3 @@
-# utils/email_utils.py - PRODUCTION VERSION
 import logging
 from fastapi_mail import MessageSchema
 from core.email_config import fast_mail, jinja_env
@@ -36,11 +35,11 @@ async def send_password_reset_email(email: str, user: dict, reset_token: str):
 
         # Send email
         await fast_mail.send_message(message)
-        logger.info(f"✅ Password reset email sent to {email}")
+        logger.info(f"Password reset email sent to {email}")
         return True
 
     except Exception as e:
-        logger.error(f"❌ Failed to send password reset email: {str(e)}")
+        logger.error(f"Failed to send password reset email: {str(e)}")
         return False
 
 async def send_welcome_email(email: str, user: dict):
@@ -64,9 +63,9 @@ async def send_welcome_email(email: str, user: dict):
         )
 
         await fast_mail.send_message(message)
-        logger.info(f"✅ Welcome email sent to {email}")
+        logger.info(f"Welcome email sent to {email}")
         return True
 
     except Exception as e:
-        logger.error(f"❌ Failed to send welcome email: {str(e)}")
+        logger.error(f"Failed to send welcome email: {str(e)}")
         return False
