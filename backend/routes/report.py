@@ -2,11 +2,11 @@ from typing import List, Optional
 from uuid import uuid4, UUID
 from fastapi import APIRouter, UploadFile, File, Form, Depends, status
 from sqlalchemy.orm import Session
-from core.oauth import get_current_user
-from models import Report, User
-from database import get_db
-from schemas.report import ReportOut
-from services.report import get_user_reports, get_user_report, delete_user_report, create_user_report
+from backend.core.oauth import get_current_user
+from backend.models import Report, User
+from backend.database import get_db
+from backend.schemas.report import ReportOut
+from backend.services.report import get_user_reports, get_user_report, delete_user_report, create_user_report
 
 
 report_router = APIRouter(prefix="/report", tags=["Report"])

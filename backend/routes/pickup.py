@@ -3,12 +3,12 @@ import os
 from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import List
-from core.oauth import get_current_user
-from models import PickupRequest, User
-from schemas.pickup import PickupRequestCreate, PickupRequestOut
-from database import get_db
-from services.pickup import create_pickup as create, update_pickup_by_id, delete_pickup_by_id, save_pickup_image
-from services.pickup import get_pickup_by_id as get_pickup_by_id_service
+from backend.core.oauth import get_current_user
+from backend.models import PickupRequest, User
+from backend.schemas.pickup import PickupRequestCreate, PickupRequestOut
+from backend.database import get_db
+from backend.services.pickup import create_pickup as create, update_pickup_by_id, delete_pickup_by_id, save_pickup_image
+from backend.services.pickup import get_pickup_by_id as get_pickup_by_id_service
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)

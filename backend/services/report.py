@@ -3,7 +3,7 @@ import shutil
 from uuid import uuid4, UUID
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
-from models import Report
+from backend.models import Report
 from typing import Optional
 
 

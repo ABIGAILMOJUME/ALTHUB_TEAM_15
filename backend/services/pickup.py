@@ -2,9 +2,9 @@ import shutil
 import uuid, os
 from fastapi import HTTPException,status, UploadFile,File
 from sqlalchemy.orm import Session
-import logger
-import models
-from schemas.pickup import PickupRequestCreate
+import backend.logger as logger
+import backend.models as models
+from backend.schemas.pickup import PickupRequestCreate
 
 UPLOAD_DIR = "upload"
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
