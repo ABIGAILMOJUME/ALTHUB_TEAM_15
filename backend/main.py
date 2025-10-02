@@ -2,7 +2,7 @@ import os, time
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from middleware import (
+from backend.middleware import (
     SecurityMiddleware,
     LoggingMiddleware,
     MonitoringMiddleware,
@@ -12,14 +12,14 @@ from middleware import (
 )
 from fastapi.responses import Response
 from prometheus_client import generate_latest
-import models
-from database import engine
-from routes.auth import login_router
-from routes.user import user_router
-from routes.pickup import pickup_router
-from routes.report import report_router
-from routes import admin
-from core.config import settings
+import backend.models as models
+from backend.database import engine
+from backend.routes.auth import login_router
+from backend.routes.user import user_router
+from backend.routes.pickup import pickup_router
+from backend.routes.report import report_router
+from backend.routes import admin
+from backend.core.config import settings
 
 
 models.Base.metadata.create_all(bind=engine)

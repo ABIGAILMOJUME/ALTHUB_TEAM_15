@@ -2,7 +2,7 @@ from fastapi_mail import FastMail, ConnectionConfig
 from jinja2 import Environment, FileSystemLoader
 import logging
 import os
-from core.config import settings
+from backend.core.config import settings
 
 logger = logging.getLogger(__name__)
 

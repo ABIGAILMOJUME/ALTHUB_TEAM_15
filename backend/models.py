@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP, Text
 
-from database import Base
+from backend.database import Base
 
 
 class User(Base):

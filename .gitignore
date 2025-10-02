@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+/.env
 node_modules
 dist
 dist-ssr
@@ -23,7 +24,14 @@ dist-ssr
 *.sln
 *.sw?
 
+<<<<<<< HEAD
+# environmental variable
+ /.env
+
+=======
+/.env
  
+>>>>>>> 17c5d1c6e6e213a7042cb2df944a5cb3ac5153f0
 "# Python cache files" 
 "__pycache__/" 
 "*.pyc" 

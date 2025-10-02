@@ -1,14 +1,14 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from services.auth import AuthServices
-from core.security import authenticate_user
-from core.oauth import create_token
-from database import get_db
+from backend.services.auth import AuthServices
+from backend.core.security import authenticate_user
+from backend.core.oauth import create_token
+from backend.database import get_db
 import logging
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from schemas.login import ForgotPassword, ResetPassword
+from backend.schemas.login import ForgotPassword, ResetPassword
 
 
 login_router = APIRouter(tags=["Authentication"])
