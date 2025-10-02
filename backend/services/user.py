@@ -1,8 +1,8 @@
 from sqlalchemy import func
-from backend.logger import get_logger
+from logger import get_logger
 from sqlalchemy.orm import Session
-import backend.models as models
-from backend.schemas.user import UserCreate
+import models
+from schemas.user import UserCreate
 
 logger = get_logger(__name__)
 

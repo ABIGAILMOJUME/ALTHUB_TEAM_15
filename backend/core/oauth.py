@@ -6,11 +6,11 @@ from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from backend.core.config import settings
-from backend.database import get_db
-from backend.models import User
-from backend.schemas.login import TokenData
-from backend.core.config import settings
+from core.config import settings
+from database import get_db
+from models import User
+from schemas.login import TokenData
+from core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)

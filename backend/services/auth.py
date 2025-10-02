@@ -2,12 +2,12 @@ from sqlalchemy.orm import Session
 from starlette.responses import JSONResponse
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request
 import logging
-from backend.core.oauth import create_reset_token
-from backend.models import User
-from backend.schemas.login import ForgotPassword, ResetPassword
+from core.oauth import create_reset_token
+from models import User
+from schemas.login import ForgotPassword, ResetPassword
 from starlette.responses import JSONResponse
-from backend.utils.email_utils import send_password_reset_email
-from backend.database import get_db
+from utils.email_utils import send_password_reset_email
+from database import get_db
 
 logger = logging.getLogger(__name__)
 

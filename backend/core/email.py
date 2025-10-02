@@ -1,5 +1,5 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from backend.core.config import settings
+from core.config import settings
 from jinja2 import Environment, FileSystemLoader
 
 conf = ConnectionConfig(

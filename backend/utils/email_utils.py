@@ -1,7 +1,7 @@
 import logging
 from fastapi_mail import MessageSchema
-from backend.core.email_config import fast_mail, jinja_env
-from backend.core.config import settings
+from core.email_config import fast_mail, jinja_env
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 
