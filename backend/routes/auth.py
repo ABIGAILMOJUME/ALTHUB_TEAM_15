@@ -6,8 +6,6 @@ from services.auth import AuthServices, Auth_Service
 from core.security import authenticate_user, get_user_by_email, get_password_hash
 from database import get_db
 import logging
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
 security = HTTPBearer()
 
@@ -82,23 +80,3 @@ def logout(
 ):
     token = authorization.credentials
     return Auth_Service.logout(db, token)
-
-
-@auth_router.post("/forgot-password", status_code=status.HTTP_201_CREATED)
-async def forgot_password(
-        request: ForgotPassword,
-        background_tasks: BackgroundTasks,
-        db: Session = Depends(get_db)
-):
-    password = await AuthServices.forgot_password(db, request, background_tasks)
-    return password
-
-
-@auth_router.post("/reset-password", status_code=status.HTTP_201_CREATED)
-async def reset_password(
-        request: ResetPassword,
-        db: Session = Depends(get_db)
-):
-
-    password =await AuthServices.reset_password(db, request)
-    return password

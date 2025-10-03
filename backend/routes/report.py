@@ -1,5 +1,5 @@
 from typing import List, Optional
-from uuid import uuid4, UUID
+from uuid import UUID
 from fastapi import APIRouter, UploadFile, File, Form, Depends, status
 from sqlalchemy.orm import Session
 from core.security import get_current_user

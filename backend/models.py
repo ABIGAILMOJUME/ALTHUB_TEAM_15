@@ -4,7 +4,6 @@ from sqlalchemy import Column, String, ForeignKey, Boolean, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP, Text
-
 from database import Base
 from schemas.pickup import PickupStatus
 from schemas.report import ReportStatus

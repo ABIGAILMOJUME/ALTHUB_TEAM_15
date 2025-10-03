@@ -9,7 +9,7 @@ load_dotenv()
 class Settings(BaseSettings):
     # App
     APP_NAME: str = "Waste Management API"
-    APP_BASE_URL: str = "http://localhost:8000"
+    APP_BASE_URL: str
     DEBUG: bool = True
 
     # Database
@@ -21,15 +21,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRES_DAYS: int = 10
 
-
-    # Mail
-    MAIL_USERNAME: str = Field(..., env="MAIL_USERNAME")
-    MAIL_PASSWORD: str = Field(..., env="MAIL_PASSWORD")
-    MAIL_FROM: EmailStr = Field(..., env="MAIL_FROM")
-    MAIL_PORT: int = 587
-    MAIL_SERVER: str = Field(..., env="MAIL_SERVER")
-    MAIL_STARTTLS: bool = True
-    MAIL_SSL_TLS: bool = False
 
     class Config:
         env_file = ".env"
