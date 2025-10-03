@@ -17,10 +17,10 @@ class PickupRequest(PickupRequestBase):
     user_id: UUID
 
 
-class PickupStatus(Enum):
-    pending = "pending"
-    in_progress = "in_progress"
-    completed = "completed"
+class PickupStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
 
 
 class PickupRequestOut(BaseModel):

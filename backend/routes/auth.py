@@ -1,42 +1,91 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from services.auth import AuthServices
-from core.security import authenticate_user
-from core.oauth import create_token
+from schemas.user import UserOut, UserCreate, RefreshToken, ForgotPassword, ResetPassword
+from services.auth import AuthServices, Auth_Service
+from core.security import authenticate_user, get_user_by_email, get_password_hash
 from database import get_db
 import logging
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from schemas.login import ForgotPassword, ResetPassword
 
 
-login_router = APIRouter(tags=["Authentication"])
+security = HTTPBearer()
 
+auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 logger = logging.getLogger(__name__)
-limiter = Limiter(key_func=get_remote_address)
 
-@login_router.post("/login", status_code=status.HTTP_201_CREATED)
-@limiter.limit("5/minute")
-def login(request: Request, credential: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    logger.info("Authenticating user...")
 
-    user = authenticate_user(db, email=credential.username, password=credential.password)
-    if not user:
-        logger.warning("Login failed: Invalid credentials")
+
+@auth_router.post("/login",)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    return Auth_Service.login(db, form_data)
+
+
+@auth_router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserOut)
+def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    logger.info("Checking if user exists....")
+
+    try:
+        existing_user = get_user_by_email(db, email=user_data.email)
+        if existing_user:
+            logger.warning(f"User with email {user_data.email} already exists")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+
+        password_hash = get_password_hash(user_data.password)
+        logger.info('Creating new user...')
+
+        new_user = Auth_Service.register(
+            db,
+            user_data,
+            password_hash,
+            role=user_data.role.value
+       )
+
+        db.commit()
+
+        logger.info('User successfully created.')
+        return new_user
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error during registration: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Email or password is incorrect",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error during registration: {str(e)}"
         )
 
-    access_token = create_token(data={"sub": user.email, "is_admin": user.is_admin})
-    logger.info(f"Token issued for {user.email}")
+@auth_router.post("/refresh", status_code=status.HTTP_201_CREATED, response_model=dict)
+def refresh(request: RefreshToken,
+            db: Session = Depends(get_db)
+            ):
+    try:
+        refresh_tokens = Auth_Service.refresh_token(db, request.refresh_token)
+        if not refresh_tokens:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid token"
+            )
+        return refresh_tokens
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
 
-    return {"access_token": access_token, "token_type": "bearer"}
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(
+    authorization: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    token = authorization.credentials
+    return Auth_Service.logout(db, token)
 
 
-@login_router.post("/forgot-password", status_code=status.HTTP_201_CREATED)
+@auth_router.post("/forgot-password", status_code=status.HTTP_201_CREATED)
 async def forgot_password(
         request: ForgotPassword,
         background_tasks: BackgroundTasks,
@@ -46,7 +95,7 @@ async def forgot_password(
     return password
 
 
-@login_router.post("/reset-password", status_code=status.HTTP_201_CREATED)
+@auth_router.post("/reset-password", status_code=status.HTTP_201_CREATED)
 async def reset_password(
         request: ResetPassword,
         db: Session = Depends(get_db)

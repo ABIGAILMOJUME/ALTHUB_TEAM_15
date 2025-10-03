@@ -1,32 +1,23 @@
 from datetime import datetime
-
+from enum import Enum
+from typing import Optional
 from pydantic import BaseModel, EmailStr, field_validator
 
+
+
+class Role(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
 
 class UserBase(BaseModel):
     name: str
     email: EmailStr
-    password: str
-
-    @field_validator('password')
-    def password_complexity(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters long")
-        if not any(char.isdigit() for char in v):
-            raise ValueError("Password must contain at least one digit")
-        if not any(char.isupper() for char in v):
-            raise ValueError("Password must contain at least one uppercase letter")
-        if not any(char.islower() for char in v):
-            raise ValueError("Password must contain at least one lowercase letter")
-        if not any(char in "!@#$%^&*(),.?\":{}|<>" for char in v):
-            raise ValueError("Password must contain at least one special character")
-        return v
 
 
 
 class UserCreate (UserBase):
-    pass
-
+    password: str
+    role: Role = Role.USER
 
 class UserOut(BaseModel):
     name: str
@@ -36,3 +27,37 @@ class UserOut(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class UserLogin (BaseModel):
+    email: EmailStr
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    refresh_token: str
+
+class TokenData(BaseModel):
+    email : Optional[str] = None
+
+class RefreshToken(BaseModel):
+    refresh_token: str
+
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+class ResetPassword(BaseModel):
+    token: str
+    new_password: str

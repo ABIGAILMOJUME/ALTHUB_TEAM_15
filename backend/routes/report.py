@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import uuid4, UUID
 from fastapi import APIRouter, UploadFile, File, Form, Depends, status
 from sqlalchemy.orm import Session
-from core.oauth import get_current_user
+from core.security import get_current_user
 from models import Report, User
 from database import get_db
 from schemas.report import ReportOut

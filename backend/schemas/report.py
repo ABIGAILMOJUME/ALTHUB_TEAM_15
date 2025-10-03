@@ -1,8 +1,12 @@
+from enum import Enum
 from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
 from typing import Optional
 
+class ReportStatus(str, Enum):
+    OPEN = "open"
+    CLOSE = "close"
 
 class ReportBase(BaseModel):
     user_id: UUID

@@ -3,7 +3,8 @@ import os
 from sqlalchemy.orm import Session
 from uuid import UUID
 from typing import List
-from core.oauth import get_current_user
+
+from core.security import get_current_user
 from models import PickupRequest, User
 from schemas.pickup import PickupRequestCreate, PickupRequestOut
 from database import get_db

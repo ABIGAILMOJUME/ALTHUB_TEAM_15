@@ -52,7 +52,6 @@ def create_user_report(
         if file:
             validate_file(file)
 
-            # Generate unique filename
             file_ext = file.filename.split(".")[-1].lower()
             filename = f"{uuid4()}.{file_ext}"
             file_path = os.path.join(UPLOAD_DIR, filename)

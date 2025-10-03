@@ -1,32 +1,72 @@
-from fastapi import Depends, HTTPException, status, APIRouter, Form
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List, Annotated
-import models
+from uuid import UUID
+import logging
+
+from core.security import get_current_user
 from database import get_db
-from schemas.user import UserCreate, UserOut
-from services.user import logger, get_user_by_email, create_user
-from core import security
+from models import User
+from schemas.user import UserOut, UserUpdate
+from services.user import User_Services
 
-user_router = APIRouter(prefix="/users", tags=["users"])
+logger = logging.getLogger(__name__)
+user_router = APIRouter(prefix="/me", tags=["users"])
 
 
-@user_router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserOut)
-def signup(user_data: Annotated[UserCreate, Form()], db: Session = Depends(get_db)):
-    logger.info('Checking if user exists...')
+@user_router.get("/", response_model=UserOut)
+def get_current_user_profile(
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
+    try:
+        logger.info(f"Fetching profile for user {current_user.id}")
+        return current_user
 
-    db_user = get_user_by_email(db, email=user_data.email)
-    if db_user:
-        logger.warning(f"User with email {user_data.email} already exists.")
-        raise HTTPException(status_code=400, detail="Email already registered")
+    except Exception as e:
+        logger.error(f"Error fetching user profile {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching profile"
+        )
 
-    hashed_password = security.hash_password(user_data.password)
 
-    logger.info('Creating new user...')
-    new_user = create_user(db, user_data, hashed_password)
-    logger.info('User successfully created.')
+@user_router.patch("/", response_model=UserOut)
+def update_current_user_(
+        update_data: UserUpdate,
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
 
-    return new_user
+    try:
+        logger.info(f"Updating profile for user {current_user.id}")
+        update_dict = update_data.model_dump(exclude_unset=True)
 
-@user_router.get("/",  response_model=List[UserOut])
-def get_all_users(db:Session = Depends(get_db)):
-    return db.query(models.User).all()
+        if not update_dict:
+            logger.info("No fields to update")
+            return current_user
+
+        updated_user = User_Services.update_user(db, current_user.id, update_dict)
+
+        if not updated_user:
+            logger.error(f"User {current_user.id} not found during update")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        logger.info(f"Profile updated successfully for user {current_user.id}")
+        return updated_user
+
+    except ValueError as e:
+        logger.warning(f"Validation error updating user {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Error updating profile for user {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error updating profile"
+        )
+

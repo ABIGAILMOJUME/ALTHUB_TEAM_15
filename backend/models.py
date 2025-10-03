@@ -1,11 +1,14 @@
 import uuid
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, ForeignKey, Boolean, DateTime
+from sqlalchemy import Column, String, ForeignKey, Boolean, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP, Text
 
 from database import Base
+from schemas.pickup import PickupStatus
+from schemas.report import ReportStatus
+from schemas.user import Role
 
 
 class User(Base):
@@ -14,10 +17,8 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True, nullable=False)
     name = Column(String,  nullable=False)
     email = Column(String, unique=True,  nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_admin = Column(Boolean, default=False)
-    reset_token = Column(String, nullable=True)
-    reset_token_expiry = Column(DateTime, nullable=True)
+    password_hash = Column(String, nullable=False)
+    role = Column(Enum(Role), default=Role.USER)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
 
     pickup_requests = relationship("PickupRequest", back_populates="user", cascade="all, delete-orphan")
@@ -32,7 +33,7 @@ class PickupRequest(Base):
     location = Column(String, nullable=False)
     waste_type = Column(String, nullable=False)
     scheduled_date = Column(DateTime(timezone=True), nullable=False)
-    status = Column(String, default="pending")
+    status = Column(Enum(PickupStatus), default=PickupStatus.PENDING)
     image_path = Column(String, nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
 
@@ -47,8 +48,16 @@ class Report(Base):
     location = Column(String, nullable=False)
     issue_type = Column(String, nullable=False)
     description = Column(Text)
-    status = Column(String, default="open")
+    status = Column(Enum(ReportStatus), default=ReportStatus.OPEN)
     image_path = Column(String, nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="reports")
+
+
+class BlacklistedToken(Base):
+    __tablename__ = "blacklisted_tokens"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    token = Column(String, primary_key=True)
+    blacklisted_at = Column(DateTime(timezone=True), server_default=func.now())
