@@ -9,7 +9,6 @@ import logging
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-
 security = HTTPBearer()
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])

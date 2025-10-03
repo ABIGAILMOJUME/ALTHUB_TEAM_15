@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
 import logging
-
 from core.security import get_current_user
 from database import get_db
 from models import User
@@ -10,7 +9,7 @@ from schemas.user import UserOut, UserUpdate
 from services.user import User_Services
 
 logger = logging.getLogger(__name__)
-user_router = APIRouter(prefix="/me", tags=["users"])
+user_router = APIRouter(prefix="/users", tags=["users"])
 
 
 @user_router.get("/", response_model=UserOut)

@@ -14,6 +14,7 @@ from schemas.user import UserCreate, ResetPassword, ForgotPassword
 from utils.email_utils import send_password_reset_email
 from database import get_db
 
+
 logger = logging.getLogger(__name__)
 
 class AuthServices:
@@ -193,7 +194,6 @@ class AuthServices:
         db.commit()
 
         logger.info(f"Password reset successfully for {email}")
-
         return JSONResponse(
             status_code=200,
             content={"message": "Password reset successfully"}

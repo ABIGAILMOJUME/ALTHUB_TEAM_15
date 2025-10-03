@@ -1,8 +1,7 @@
 import shutil
-import uuid, os
+import uuid, os, logger
 from fastapi import HTTPException,status, UploadFile,File
 from sqlalchemy.orm import Session
-import logger
 import models
 from schemas.pickup import PickupRequestCreate
 
