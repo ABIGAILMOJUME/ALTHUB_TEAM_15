@@ -1,16 +1,10 @@
-import logging
-import logging.handlers
-
-
-PAPERTRAIL_HOST = 'logs2.papertrailapp.com'
-PAPERTRAIL_PORT = 50951
-
+import  logging
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s"
+    level =logging.INFO,
+    format= "%(filename)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
 )
 
-def get_logger(name):
-    logger = logging.getLogger(name)
-    return logger
+def get_logger(filename: str) -> logging.Logger:
+    return logging.getLogger(filename)

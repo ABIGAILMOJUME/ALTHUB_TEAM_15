@@ -3,9 +3,8 @@ import shutil
 from uuid import uuid4, UUID
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
-from models import Report
 from typing import Optional
-
+from models import Report
 
 UPLOAD_DIR = "uploads"
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "bmp"}
@@ -52,7 +51,6 @@ def create_user_report(
         if file:
             validate_file(file)
 
-            # Generate unique filename
             file_ext = file.filename.split(".")[-1].lower()
             filename = f"{uuid4()}.{file_ext}"
             file_path = os.path.join(UPLOAD_DIR, filename)
