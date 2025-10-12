@@ -167,7 +167,9 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 my-8">
             <StatCard title="Total Number of PickUps" value={stats?.total_waste_disposed_kg ?? 0} loading={loading} />
             <StatCard title="Total Illegal Reports Logged" value={stats?.total_illegal_reports ?? 0} loading={loading} />
-            <StatCard title="Coins Earned" value={stats?.total_coins_earned ?? 0} unit="coins" loading={loading} />
+            <div title="Amount of coins can be used as discount for your pickup payment">
+              <StatCard title="Coins Earned" value={stats?.total_coins_earned ?? 0} unit="coins" loading={loading} />
+            </div>
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
