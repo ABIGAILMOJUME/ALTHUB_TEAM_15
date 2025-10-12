@@ -33,6 +33,7 @@ const IllegalDumping = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeolocating, setIsGeolocating] = useState(false);
   const fileInputRef = useRef(null);
 
   const onLoad = useCallback(function callback(mapInstance) {
@@ -82,11 +83,50 @@ const IllegalDumping = () => {
     }
   }, [searchBox, map]);
 
+  const handleGetCurrentLocation = () => {
+    if (navigator.geolocation) {
+        setIsGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                const newCenter = { lat: latitude, lng: longitude };
+
+                const geocoder = new window.google.maps.Geocoder();
+                geocoder.geocode({ location: newCenter }, (results, status) => {
+                    setIsGeolocating(false);
+                    if (status === 'OK') {
+                        if (results[0]) {
+                            setSelectedPlace({
+                                name: 'Current Location',
+                                address: results[0].formatted_address,
+                                location: newCenter,
+                            });
+                            map?.panTo(newCenter);
+                            map?.setZoom(15);
+                            setIsModalOpen(true);
+                        } else {
+                            toast.error('No address found for your location.');
+                        }
+                    } else {
+                        toast.error(`Geocoder failed due to: ${status}`);
+                    }
+                });
+            },
+            (error) => {
+                setIsGeolocating(false);
+                toast.error(`Error getting your location: ${error.message}`);
+            }
+        );
+    } else {
+        toast.error('Geolocation is not supported by this browser.');
+    }
+  };
+
   const handleFileChange = (event) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      if (file.size > 800 * 1024) {
-        toast.error("File size exceeds 800KB limit.");
+      if (file.size > 1000 * 1024) {
+        toast.error("File size exceeds 1mb limit.");
         setUploadedFile(null);
       } else {
         setUploadedFile(file);
@@ -98,8 +138,8 @@ const IllegalDumping = () => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      if (file.size > 800 * 1024) {
-        toast.error("File size exceeds 800KB limit.");
+      if (file.size > 1000 * 1024) {
+        toast.error("File size exceeds 1mb limit.");
         setUploadedFile(null);
       } else {
         setUploadedFile(file);
@@ -156,8 +196,8 @@ const IllegalDumping = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-x-hidden">
       <Sidebar />
-      <div className="flex-1 pt-20 p-4 overflow-y-auto w-full h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+      <div className="flex-1 flex flex-col pt-10 p-4 overflow-hidden w-full bg-gray-50 dark:bg-gray-900">
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 flex-shrink-0">
           <div>
             <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
               Report Illegal Bin Disposal
@@ -185,7 +225,7 @@ const IllegalDumping = () => {
           </button>
         </div>
 
-        <div className="relative w-full h-[calc(100vh-180px)] rounded-lg shadow-lg overflow-hidden">
+        <div className="relative w-full flex-grow rounded-lg shadow-lg overflow-hidden">
           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}  libraries={["places"]}>
             <GoogleMap
               mapContainerStyle={containerStyle}
@@ -193,35 +233,41 @@ const IllegalDumping = () => {
               zoom={12}
               options={mapOptions}
             >
-              <div className="absolute top-4 left-4 z-10 w-96">
-                <div className="relative">
-                 <StandaloneSearchBox
-                onLoad={onLoadSearchBox}
-                onPlacesChanged={onPlacesChanged}
-              >
-                  <input
-                    type="text"
-                    placeholder="Search location to report..."
-                    className="pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full dark:text-gray-100"
-                  />
-                    </StandaloneSearchBox>
+              <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+                <div className="relative flex-grow w-96">
+                  <StandaloneSearchBox
+                    onLoad={onLoadSearchBox}
+                    onPlacesChanged={onPlacesChanged}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search for a location..."
+                      className="pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full dark:text-gray-100"
+                    />
+                  </StandaloneSearchBox>
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      ></path>
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                   </div>
                 </div>
+                <button 
+                    onClick={handleGetCurrentLocation} 
+                    disabled={isGeolocating}
+                    className="p-2.5 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                    title="Use my current location"
+                >
+                    {isGeolocating ? (
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-300 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    ) : (
+                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                    )}
+                </button>
               </div>
 
               <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2">
@@ -237,7 +283,7 @@ const IllegalDumping = () => {
               {!selectedPlace && !isModalOpen && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 bg-white dark:bg-gray-800 bg-opacity-90 rounded-lg shadow-lg text-center pointer-events-none">
                   <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                    Use the search bar to find and report a location.
+                    Use the search bar to find and report a location or click on the location button to use current location.
                   </p>
                 </div>
               )}

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/navigation.jsx";
 import ConnectingLines from "../components/ConnectingLines.jsx";
 import apiFetch from "../lib/api.js";
 import { useSchedule } from "../context/ScheduleContext";
+import { Check, Loader2, Calendar, MapPin, Clock, Package, Star, CreditCard, AlertCircle, Sparkles } from "lucide-react";
+
 
 const ScheduleSuccess = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -186,21 +187,27 @@ const ScheduleSuccess = () => {
         <div className="max-w-4xl mx-auto">
           <ConnectingLines currentStep={5} onLineClick={handleLineClick} />
 
-          <div className="text-center mb-8 mt-8">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Step 5 of 5: Schedule Confirmation</p>
-          </div>
-
-          <div className="text-center mb-12">
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Check className="w-8 h-8 text-white" />
+        {/* Success Header */}
+          <div className="text-center mb-10 mt-4">
+            <div className="flex items-center gap-3 justify-center mb-6">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-md">
+                <span>Step 5 of 5: Confirmation</span>
+              </div>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-              Schedule created successfully
+
+            <div className="relative inline-block mb-6">
+              <div className="absolute inset-0 bg-green-400 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+              <div className="relative w-17 h-17 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl">
+                <Check className="w-8 h-8 text-white" strokeWidth={3} />
+              </div>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent mb-4">
+              Schedule Created Successfully!
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Your recurring waste pickup is now active
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+              Your recurring waste pickup is now active and ready to go
             </p>
-            
             <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 inline-block">
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 Next Pickup: <span className="font-medium">{nextPickup}</span>
@@ -208,10 +215,15 @@ const ScheduleSuccess = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-6 text-center">
-              Schedule details
-            </h3>
+          <div className="bg-white dark:bg-gray-800  items-center rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                <Star className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                Schedule Details
+              </h3>
+            </div>
             
             <div className="space-y-4">
               <div className="flex justify-between">
@@ -257,18 +269,24 @@ const ScheduleSuccess = () => {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-center">
+         {/* Payment Button */}
+          <div className="flex justify-center mt-8">
             <button 
               onClick={handlePayment}
               disabled={isLoading}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center w-72 disabled:bg-blue-400 disabled:cursor-not-allowed">
+              className="group relative bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-4 px-10 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Processing...
+                  <Loader2 className="w-5 h-5 animate-spin relative z-10" />
+                  <span className="relative z-10">Processing...</span>
                 </>
               ) : (
-                'Payment & Billing Information'
+                <>
+                  <CreditCard className="w-5 h-5 relative z-10" />
+                  <span className="relative z-10">Continue to Payment & Billing</span>
+                </>
               )}
             </button>
           </div>

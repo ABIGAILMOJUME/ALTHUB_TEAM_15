@@ -1,0 +1,67 @@
+.logo-container {
+  animation: fadeIn 2s ease-in-out;
+}
+
+.logo {
+  width: 150px;
+  height: auto;
+}
+
+.caption {
+  margin-top: 20px;
+  font-size: 2rem;
+  color: #1B5E20; /* Dark shade of green */
+  font-weight: bold;
+  animation: slideIn 2s ease-in-out 0.5s; /* Delay slideIn */
+  animation-fill-mode: backwards; /* Element is not visible before animation starts */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.loading-bar-container {
+  position: absolute;
+  bottom: 50px;
+  width: 200px;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.loading-bar {
+  width: 100%;
+  height: 100%;
+  background-color: #1B5E20; /* Dark shade of green */
+  animation: fill-bar 2s linear forwards;
+  border-radius: 4px;
+  transform-origin: left;
+}
+
+@keyframes fill-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
