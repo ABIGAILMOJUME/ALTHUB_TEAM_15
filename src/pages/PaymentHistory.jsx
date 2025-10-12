@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/navigation';
 import apiFetch from '../lib/api';
 import { Toaster, toast } from 'sonner';
+import {  Receipt} from 'lucide-react';
+
 
 const PaymentHistory = () => {
   const [payments, setPayments] = useState([]);
@@ -44,12 +46,20 @@ const PaymentHistory = () => {
     <div className="flex flex-col md:flex-row h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 pt-20 p-4 md:p-8 overflow-y-auto w-full h-screen">
-        <div className="mb-8">
-          <h1 className="text-2xl text-gray-800 dark:text-gray-100 font-semibold mb-1">Payment History</h1>
-          <p className="text-base text-gray-600 dark:text-gray-300">
-            Here is a record of your past payments.
-          </p>
-        </div>
+         {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                <Receipt className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
+                Payment History
+              </h1>
+            </div>
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 ml-14">
+              Track all your payment transactions and billing history
+            </p>
+          </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="overflow-x-auto">

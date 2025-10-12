@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreditCard, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/navigation.jsx";
@@ -16,6 +16,26 @@ const PaymentBillingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [coins, setCoins] = useState(0);
+  const [coinDiscount, setCoinDiscount] = useState(0);
+  const [discountApplied, setDiscountApplied] = useState(false);
+
+  useEffect(() => {
+    const fetchCoins = async () => {
+        try {
+            const reportResponse = await apiFetch('https://binit-1fpv.onrender.com/report');
+            if (reportResponse.ok) {
+                const reportData = await reportResponse.json();
+                if (Array.isArray(reportData)) {
+                    setCoins(Math.floor(reportData.length / 2));
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch coins", error);
+        }
+    };
+    fetchCoins();
+  }, []);
 
   const handleLineClick = (step) => {
     switch (step) {
@@ -73,6 +93,15 @@ const PaymentBillingPage = () => {
   const monthlyCostValue = parseCurrency(company?.price || "0");
   const newCustomerDiscount = 150;
   const firstPayment = monthlyCostValue - newCustomerDiscount;
+  const finalAmount = firstPayment - coinDiscount;
+
+  const handleApplyDiscount = () => {
+    if (!discountApplied && coins > 0) {
+        setCoinDiscount(coins);
+        setDiscountApplied(true);
+        toast.success(`${coins} coins applied as discount!`);
+    }
+  };
 
   const handlePayment = async () => {
     setIsLoading(true);
@@ -85,7 +114,7 @@ const PaymentBillingPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: firstPayment,
+          amount: Math.max(0, finalAmount),
           currency: 'NAIRA',
           description: `Payment for ${company?.name} waste collection.`,
           payment_metadata: {
@@ -149,6 +178,14 @@ const PaymentBillingPage = () => {
 
   const upcomingPickups = calculateUpcomingPickups(startDate, frequency, timeWindow);
 
+  const calculateNextBillingDate = (startDate) => {
+    if (!startDate) return "N/A";
+    const start = new Date(startDate);
+    const nextBilling = new Date(start.setMonth(start.getMonth() + 1));
+    return nextBilling.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+  const nextBillingDate = calculateNextBillingDate(startDate);
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
@@ -193,15 +230,41 @@ const PaymentBillingPage = () => {
                   <span className="text-gray-700 dark:text-gray-300 font-medium">New Customer Discount:</span>
                   <span className="text-green-600 font-semibold">-{formatCurrency(newCustomerDiscount)}</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">First Payment:</span>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">Subtotal:</span>
                   <span className="text-gray-900 dark:text-white font-semibold">{formatCurrency(firstPayment)}</span>
+                </div>
+
+                <div className="py-2 border-t border-dashed mt-2 pt-2">
+                  <div className="flex justify-between items-center">
+                      <span className="text-gray-700 dark:text-gray-300 font-medium">Your Coins:</span>
+                      <span className="text-green-600 font-semibold">{coins} coins</span>
+                  </div>
+                  {!discountApplied && coins > 0 && (
+                      <div className="text-right mt-1">
+                          <button onClick={handleApplyDiscount} className="text-sm text-green-600 hover:underline font-semibold" disabled={isLoading}>
+                              Apply coins as discount
+                          </button>
+                      </div>
+                  )}
+                </div>
+
+                {discountApplied && (
+                    <div className="flex justify-between items-center py-2 text-green-600">
+                        <span className="font-medium">Coin Discount:</span>
+                        <span className="font-semibold">-{formatCurrency(coinDiscount)}</span>
+                    </div>
+                )}
+
+                <div className="flex justify-between items-center py-3 border-t-2 border-gray-300 dark:border-gray-600 mt-2">
+                    <span className="text-gray-800 dark:text-white font-bold text-lg">Total to Pay:</span>
+                    <span className="text-gray-900 dark:text-white font-bold text-lg">{formatCurrency(Math.max(0, finalAmount))}</span>
                 </div>
                 
                 <div className="flex justify-between items-center py-2 border-t border-gray-200 dark:border-gray-700 pt-4">
                   <span className="text-gray-700 dark:text-gray-300 font-medium">Next Billing:</span>
-                  <span className="text-gray-900 dark:text-white font-semibold">August 10, 2025</span>
+                  <span className="text-gray-900 dark:text-white font-semibold">{nextBillingDate}</span>
                 </div>
               </div>
 

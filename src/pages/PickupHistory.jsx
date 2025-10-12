@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/navigation';
 import apiFetch from '../lib/api';
 import { Toaster, toast } from 'sonner';
+import { Calendar, MapPin, Package, Repeat, Truck, CheckCircle, Clock, AlertCircle, Loader2, History } from 'lucide-react';
 
 const PickupHistory = () => {
   const [pickups, setPickups] = useState([]);
@@ -12,7 +13,7 @@ const PickupHistory = () => {
     const fetchPickupHistory = async () => {
       try {
         setLoading(true);
-        const response = await apiFetch('https://binit-1fpv.onrender.com/get_all_pickups');
+        const response = await apiFetch('https://binit-1fpv.onrender.com/pickup');
         if (response.ok) {
           const data = await response.json();
           setPickups(Array.isArray(data) ? data : []);
@@ -40,13 +41,63 @@ const PickupHistory = () => {
     <div className="flex flex-col md:flex-row h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 pt-20 p-4 md:p-8 overflow-y-auto w-full h-screen">
-        <div className="mb-8">
-          <h1 className="text-2xl text-gray-800 dark:text-gray-100 font-semibold mb-1">Pickup History</h1>
-          <p className="text-base text-gray-600 dark:text-gray-300">
-            Here is a record of your past pickups.
-          </p>
-        </div>
+        {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                <History className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
+                Pickup History
+              </h1>
+            </div>
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 ml-14">
+              Track all your past and scheduled waste collection pickups
+            </p>
+          </div>
+        {/* Summary Cards */}
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {pickups.filter(p => p.status === 'completed').length}
+                  </p>
+                </div>
+              </div>
+            </div>
 
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 shadow-md">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {pickups.filter(p => p.status === 'pending').length}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-md">
+                  <Package className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Pickups</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{pickups.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        {/* Pickup History Table */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">

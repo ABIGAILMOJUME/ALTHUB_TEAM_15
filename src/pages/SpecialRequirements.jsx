@@ -63,7 +63,12 @@ const SpecialRequirements = () => {
           <ConnectingLines currentStep={4} onLineClick={handleLineClick} />
 
           <div className="mt-12">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Step 4 of 5</p>
+             <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-md">
+                  <span>Step 4 of 5</span>
+                </div>
+                <div className="h-px flex-1 bg-gradient-to-r from-gray-300 to-transparent dark:from-gray-700"></div>
+              </div>
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-8">
               Special Requirements
             </h2>

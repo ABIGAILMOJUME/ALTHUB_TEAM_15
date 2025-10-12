@@ -5,16 +5,23 @@ import { useUser } from "../context/UserContext";
 import apiFetch from "../lib/api";
 import { useNavigate } from "react-router-dom";
 
-const StatCard = ({ title, value, unit, loading }) => (
-  <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{title}</p>
-    {loading ? (
-      <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse"></div>
-    ) : (
-      <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-gray-100">
-        {value}
-        {unit && <span className="text-lg font-medium text-gray-500 dark:text-gray-400 ml-2">{unit}</span>}
-      </h2>
+const StatCard = ({ title, value, unit, loading, tooltip }) => (
+  <div className="relative group h-full">
+    <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700 h-full">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{title}</p>
+      {loading ? (
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse"></div>
+      ) : (
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-gray-100">
+          {value}
+          {unit && <span className="text-lg font-medium text-gray-500 dark:text-gray-400 ml-2">{unit}</span>}
+        </h2>
+      )}
+    </div>
+    {tooltip && (
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs px-3 py-1.5 text-sm font-medium text-green-700 bg-white dark:bg-black dark:text-green-400 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        {tooltip}
+      </div>
     )}
   </div>
 );
@@ -167,7 +174,13 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 my-8">
             <StatCard title="Total Number of PickUps" value={stats?.total_waste_disposed_kg ?? 0} loading={loading} />
             <StatCard title="Total Illegal Reports Logged" value={stats?.total_illegal_reports ?? 0} loading={loading} />
-            <StatCard title="Coins Earned" value={stats?.total_coins_earned ?? 0} unit="coins" loading={loading} />
+            <StatCard 
+              title="Coins Earned" 
+              value={stats?.total_coins_earned ?? 0} 
+              unit="coins" 
+              loading={loading} 
+              tooltip="Amount of coins can be used as discount for your pickup payment"
+            />
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
